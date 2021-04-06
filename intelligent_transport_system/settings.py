@@ -69,6 +69,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'apps.common.middleware.CurrentUserMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 SILK_ENABLE = env_config("SILK_ENABLE", cast=bool)
