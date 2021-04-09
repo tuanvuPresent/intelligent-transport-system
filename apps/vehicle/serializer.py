@@ -12,6 +12,8 @@ class VehicleSerializer(serializers.ModelSerializer):
 
 
 class CreateOrUpdateVehicleSerializer(serializers.ModelSerializer):
+    color = serializers.CharField(required=False, allow_blank=True)
+    description = serializers.CharField(required=False, allow_blank=True)
     class Meta:
         model = Vehicle
         fields = ['vehicle_type', 'brand', 'name', 'color', 'license_plate', 'description']
