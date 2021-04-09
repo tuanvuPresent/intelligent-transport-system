@@ -9,6 +9,7 @@ from apps.vehicle.serializer import VehicleSerializer, CreateOrUpdateVehicleSeri
 
 @method_decorator(name='partial_update', decorator=swagger_auto_schema(auto_schema=None))
 class VehicleAPIView(BaseModelViewSet):
+    authentication_classes = []
     serializer_action_classes = {
         'list': VehicleSerializer,
         'retrieve': VehicleSerializer,
