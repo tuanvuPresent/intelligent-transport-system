@@ -20,5 +20,5 @@ class VehicleAPIView(BaseModelViewSet):
     allow_action_name = ['create', 'list', 'retrieve', 'update', 'destroy']
 
     def get_queryset(self):
-        queryset = Vehicle.objects.all()
+        queryset = Vehicle.objects.all().order_by('id')
         return queryset
