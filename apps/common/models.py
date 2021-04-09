@@ -33,6 +33,7 @@ class BaseModel(models.Model):
 
     def delete(self, using=None, keep_parents=False):
         self.deleted_at = now()
+        user = get_current_user()
         if user != AnonymousUser():
             self.deleted_by = get_current_user()
         super(BaseModel, self).save()
