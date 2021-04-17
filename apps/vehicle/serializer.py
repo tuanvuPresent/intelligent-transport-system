@@ -62,9 +62,10 @@ class CreateOrUpdateVehicleSerializer(serializers.ModelSerializer):
 class ListVehicleLocaltionSerializer(serializers.ModelSerializer):
     position = serializers.SerializerMethodField()
     owner = serializers.SerializerMethodField()
+    speed = serializers.SerializerMethodField()
     class Meta:
         model = Vehicle
-        fields = ['vehicle_type', 'brand', 'name', 'color', 'license_plate', 'description', 'position', 'owner']
+        fields = ['vehicle_type', 'brand', 'name', 'color', 'license_plate', 'description', 'position', 'owner', 'speed']
 
     def get_position(self, instance):
         trackvehicle_list = instance.trackvehicle_set.all()
@@ -73,7 +74,12 @@ class ListVehicleLocaltionSerializer(serializers.ModelSerializer):
                 'lat': trackvehicle_list[0].latitude,
                 'lng': trackvehicle_list[0].longitude,
             }
-
+    
+    def get_speed(self, instance):
+        trackvehicle_list = instance.trackvehicle_set.all()
+        if trackvehicle_list:
+            return trackvehicle_list[0].speed
+    
     def get_owner(self, instance):
         if instance.owner_id:
             return OwnerSerializer(instance.owner_id).data
