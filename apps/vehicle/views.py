@@ -4,8 +4,10 @@ from drf_yasg.utils import swagger_auto_schema
 from django_filters import filters
 from django_filters.rest_framework import FilterSet
 from apps.common.custom_model_view_set import BaseModelViewSet
-from apps.vehicle.models import Vehicle
-from apps.vehicle.serializer import VehicleSerializer, CreateOrUpdateVehicleSerializer
+from apps.vehicle.models import Vehicle, TrackVehicle
+from apps.vehicle.serializer import VehicleSerializer, CreateOrUpdateVehicleSerializer, ListVehicleLocaltionSerializer, CreateVehicleLocaltionSerializer
+from datetime import datetime
+from django.db.models import Prefetch
 
 class VehicleFilter(FilterSet):
     vehicle_type = filters.CharFilter(field_name='vehicle_type', lookup_expr='exact')
@@ -29,3 +31,27 @@ class VehicleAPIView(BaseModelViewSet):
     def get_queryset(self):
         queryset = Vehicle.objects.all().order_by('id')
         return queryset
+
+
+@method_decorator(name='retrieve', decorator=swagger_auto_schema(auto_schema=None))
+@method_decorator(name='update', decorator=swagger_auto_schema(auto_schema=None))
+@method_decorator(name='partial_update', decorator=swagger_auto_schema(auto_schema=None))
+@method_decorator(name='destroy', decorator=swagger_auto_schema(auto_schema=None))
+class VehicleLocaltionAPIView(BaseModelViewSet):
+    authentication_classes = []
+    serializer_action_classes = {
+        'list': ListVehicleLocaltionSerializer,
+        'create': CreateVehicleLocaltionSerializer,
+    }
+
+    allow_action_name = ['create', 'list']
+
+    def get_queryset(self):
+        queryset = Vehicle.objects.all().prefetch_related(
+            Prefetch(
+                'trackvehicle_set',
+                queryset=TrackVehicle.objects.filter(date__lte=datetime.now()).order_by('date'),
+            )
+        )
+        return queryset 
+    
