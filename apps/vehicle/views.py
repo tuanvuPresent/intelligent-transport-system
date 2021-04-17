@@ -50,7 +50,7 @@ class VehicleLocaltionAPIView(BaseModelViewSet):
         queryset = Vehicle.objects.all().select_related('owner_id').prefetch_related(
             Prefetch(
                 'trackvehicle_set',
-                queryset=TrackVehicle.objects.filter(date__lte=datetime.now()).order_by('date'),
+                queryset=TrackVehicle.objects.filter(date__lte=datetime.now()).order_by('-date'),
             )
         )
         return queryset 
