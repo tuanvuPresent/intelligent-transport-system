@@ -89,3 +89,21 @@ class CreateVehicleLocaltionSerializer(serializers.ModelSerializer):
     class Meta:
         model = TrackVehicle
         fields = ['date', 'longitude', 'latitude', 'speed', 'vehicle_id']
+
+
+class CreateMultiVehicleLocaltionSerializer(serializers.Serializer):
+    data = CreateVehicleLocaltionSerializer(many=True)
+
+    def create(self, validated_data):
+        list_location = validated_data.get('data')
+        obj_list = []
+        for item in list_location:
+            obj_list.append(TrackVehicle(
+                date=item.get('date'),
+                longitude=item.get('longitude'),
+                latitude=item.get('latitude'),
+                speed=item.get('speed'),
+                vehicle_id=item.get('vehicle_id')
+            ))
+        res = TrackVehicle.objects.bulk_create(obj_list)
+        return res

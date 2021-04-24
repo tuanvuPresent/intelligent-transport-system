@@ -276,7 +276,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 CRONJOBS = [
-    ('*/2 * * * * *', 'tasks.cron.tracking_vehicle')
+    ('* * * * *', 'tasks.cron.tracking_vehicle')
 ]
 
 ICLOUD_USERNAME = env_config('ICLOUD_USERNAME')

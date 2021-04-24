@@ -5,9 +5,10 @@ from django_filters import filters
 from django_filters.rest_framework import FilterSet
 from apps.common.custom_model_view_set import BaseModelViewSet
 from apps.vehicle.models import Vehicle, TrackVehicle
-from apps.vehicle.serializer import VehicleSerializer, CreateOrUpdateVehicleSerializer, ListVehicleLocaltionSerializer, CreateVehicleLocaltionSerializer
+from apps.vehicle.serializer import VehicleSerializer, CreateOrUpdateVehicleSerializer, ListVehicleLocaltionSerializer, CreateMultiVehicleLocaltionSerializer
 from datetime import datetime
 from django.db.models import Prefetch
+from rest_framework.response import Response
 
 class VehicleFilter(FilterSet):
     vehicle_type = filters.CharFilter(field_name='vehicle_type', lookup_expr='exact')
@@ -41,7 +42,7 @@ class VehicleLocaltionAPIView(BaseModelViewSet):
     authentication_classes = []
     serializer_action_classes = {
         'list': ListVehicleLocaltionSerializer,
-        'create': CreateVehicleLocaltionSerializer,
+        'create': CreateMultiVehicleLocaltionSerializer,
     }
 
     allow_action_name = ['create', 'list']
@@ -55,3 +56,9 @@ class VehicleLocaltionAPIView(BaseModelViewSet):
         )
         return queryset 
     
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response(None)
+
