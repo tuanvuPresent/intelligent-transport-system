@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'corsheaders',
     'rest_framework',
+    'django_crontab'
 ]
 
 MIDDLEWARE = [
@@ -273,3 +274,10 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'apps.common.authentication_backend.SettingsBackend',
 ]
+
+CRONJOBS = [
+    ('*/2 * * * * *', 'tasks.cron.tracking_vehicle')
+]
+
+ICLOUD_USERNAME = env_config('ICLOUD_USERNAME')
+ICLOUD_PASSWORD = env_config('ICLOUD_PASSWORD')
