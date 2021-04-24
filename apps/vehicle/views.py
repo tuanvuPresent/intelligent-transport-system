@@ -9,6 +9,7 @@ from apps.vehicle.serializer import VehicleSerializer, CreateOrUpdateVehicleSeri
 from datetime import datetime
 from django.db.models import Prefetch
 from rest_framework.response import Response
+from intelligent_transport_system.tasks import tracking_vehicle
 
 class VehicleFilter(FilterSet):
     vehicle_type = filters.CharFilter(field_name='vehicle_type', lookup_expr='exact')
@@ -62,3 +63,6 @@ class VehicleLocaltionAPIView(BaseModelViewSet):
         self.perform_create(serializer)
         return Response(None)
 
+    def list(self, request, *args, **kwargs):
+        tracking_vehicle()
+        return super().list(request, *args, **kwargs)

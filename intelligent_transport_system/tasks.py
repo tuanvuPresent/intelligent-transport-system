@@ -20,7 +20,8 @@ def tracking_vehicle():
                 date=now,
                 longitude=lng,
                 latitude=lat,
-                vehicle_id=vehicle_id
+                vehicle_id=vehicle_id,
+                speed=0
             )
     except:
         pass
