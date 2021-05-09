@@ -80,11 +80,18 @@ class VehicleLocaltionAPIView(BaseModelViewSet):
     def list(self, request, *args, **kwargs):
         tracking_vehicle()
         minutes = int(self.request.query_params.get('minutes'))
+        last_track_vehicle = TrackVehicle.objects.filter(date__lte=datetime.now()).order_by('-date')
+        track_vehicle_last_minutes = TrackVehicle.objects.filter(date__gte=datetime.now()-timedelta(minutes=minutes)).order_by('-date')
         queryset = Vehicle.objects.all().select_related('owner_id').prefetch_related(
             Prefetch(
                 'trackvehicle_set',
-                queryset=TrackVehicle.objects.filter(date__gte=datetime.now()-timedelta(minutes=minutes)).order_by('-date') | 
-                            TrackVehicle.objects.filter(date__lte=datetime.now()).order_by('-date')[:1]
+                queryset= track_vehicle_last_minutes
+            )
+        ).prefetch_related(
+            Prefetch(
+                'trackvehicle_set',
+                queryset= last_track_vehicle,
+                to_attr='trackvehicle_last'
             )
         )
         serializer = self.get_serializer(queryset, many=True)

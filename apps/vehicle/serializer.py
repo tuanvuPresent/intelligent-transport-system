@@ -69,13 +69,22 @@ class ListVehicleLocaltionSerializer(serializers.ModelSerializer):
 
     def get_position(self, instance):
         trackvehicle_list = instance.trackvehicle_set.all()
+        trackvehicle_last = instance.trackvehicle_last
         result = []
-        for item in trackvehicle_list:
+        if len(trackvehicle_list) > 0:
+            for item in trackvehicle_list:
+                result.append({
+                    'lat':item.latitude,
+                    'lng': item.longitude,
+                    'speed': item.speed,
+                    'date': item.date,
+                })
+        else:
             result.append({
-                'lat':item.latitude,
-                'lng': item.longitude,
-                'speed': item.speed,
-                'date': item.date,
+                'lat':trackvehicle_last[0].latitude,
+                'lng': trackvehicle_last[0].longitude,
+                'speed': trackvehicle_last[0].speed,
+                'date': trackvehicle_last[0].date,
             })
         return result
     
