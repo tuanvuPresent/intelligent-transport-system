@@ -65,15 +65,19 @@ class ListVehicleLocaltionSerializer(serializers.ModelSerializer):
     speed = serializers.SerializerMethodField()
     class Meta:
         model = Vehicle
-        fields = ['vehicle_type', 'brand', 'name', 'color', 'license_plate', 'description', 'position', 'owner', 'speed']
+        fields = ['id', 'vehicle_type', 'brand', 'name', 'color', 'license_plate', 'description', 'position', 'owner', 'speed']
 
     def get_position(self, instance):
         trackvehicle_list = instance.trackvehicle_set.all()
-        if trackvehicle_list:
-            return {
-                'lat': trackvehicle_list[0].latitude,
-                'lng': trackvehicle_list[0].longitude,
-            }
+        result = []
+        for item in trackvehicle_list:
+            result.append({
+                'lat':item.latitude,
+                'lng': item.longitude,
+                'speed': item.speed,
+                'date': item.date,
+            })
+        return result
     
     def get_speed(self, instance):
         trackvehicle_list = instance.trackvehicle_set.all()

@@ -5,11 +5,17 @@ from django_filters import filters
 from django_filters.rest_framework import FilterSet
 from apps.common.custom_model_view_set import BaseModelViewSet
 from apps.vehicle.models import Vehicle, TrackVehicle
-from apps.vehicle.serializer import VehicleSerializer, CreateOrUpdateVehicleSerializer, ListVehicleLocaltionSerializer, CreateMultiVehicleLocaltionSerializer
+from apps.vehicle.serializer import VehicleSerializer, CreateOrUpdateVehicleSerializer, \
+                                    ListVehicleLocaltionSerializer, CreateMultiVehicleLocaltionSerializer
+                     
 from datetime import datetime
 from django.db.models import Prefetch
 from rest_framework.response import Response
 from intelligent_transport_system.tasks import tracking_vehicle
+from rest_framework.decorators import action
+from drf_yasg import openapi
+from django.shortcuts import get_object_or_404
+from datetime import timedelta
 
 class VehicleFilter(FilterSet):
     vehicle_type = filters.CharFilter(field_name='vehicle_type', lookup_expr='exact')
@@ -44,9 +50,16 @@ class VehicleLocaltionAPIView(BaseModelViewSet):
     serializer_action_classes = {
         'list': ListVehicleLocaltionSerializer,
         'create': CreateMultiVehicleLocaltionSerializer,
+        'history': ListVehicleLocaltionSerializer
     }
 
-    allow_action_name = ['create', 'list']
+    allow_action_name = ['create', 'list', 'history']
+
+    date = openapi.Parameter('date', openapi.IN_QUERY, description="yyyy-mm-dd", pattern='^\d{4}-\d{1,2}-\d{1,2}$',
+                             type=openapi.TYPE_STRING, default=None, required=True)
+
+    minutes = openapi.Parameter('minutes', openapi.IN_QUERY, description="minutes",
+                             type=openapi.TYPE_INTEGER, default=None, required=True)
 
     def get_queryset(self):
         queryset = Vehicle.objects.all().select_related('owner_id').prefetch_related(
@@ -63,6 +76,31 @@ class VehicleLocaltionAPIView(BaseModelViewSet):
         self.perform_create(serializer)
         return Response(None)
 
+    @swagger_auto_schema(manual_parameters=[minutes])
     def list(self, request, *args, **kwargs):
         tracking_vehicle()
-        return super().list(request, *args, **kwargs)
+        minutes = int(self.request.query_params.get('minutes'))
+        queryset = Vehicle.objects.all().select_related('owner_id').prefetch_related(
+            Prefetch(
+                'trackvehicle_set',
+                queryset=TrackVehicle.objects.filter(date__gte=datetime.now()-timedelta(minutes=minutes)).order_by('-date') | 
+                            TrackVehicle.objects.filter(date__lte=datetime.now()).order_by('-date')[:1]
+            )
+        )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @swagger_auto_schema(manual_parameters=[date])
+    @action(methods=['get'], detail=True)
+    def history(self, request, *args, **kwargs):
+        date = self.request.query_params.get('date')
+        id = kwargs.get('pk')
+        queryset = Vehicle.objects.all().select_related('owner_id').prefetch_related(
+            Prefetch(
+                'trackvehicle_set',
+                queryset=TrackVehicle.objects.filter(date__date=date).order_by('-date'),
+            )
+        )
+        queryset = get_object_or_404(queryset, pk=id)
+        serializer = self.get_serializer(queryset)
+        return Response(serializer.data)
