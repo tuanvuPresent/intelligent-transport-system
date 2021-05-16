@@ -97,7 +97,7 @@ class ListVehicleLocaltionSerializer(serializers.ModelSerializer):
         if instance.owner_id:
             return OwnerSerializer(instance.owner_id).data
 
-class HIstoryVehicleLocaltionSerializer(ListVehicleLocaltionSerializer):
+class HistoryVehicleLocaltionSerializer(ListVehicleLocaltionSerializer):
     def get_position(self, instance):
         trackvehicle_list = instance.trackvehicle_set.all()
         result = []
