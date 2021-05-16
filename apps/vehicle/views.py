@@ -6,7 +6,7 @@ from django_filters.rest_framework import FilterSet
 from apps.common.custom_model_view_set import BaseModelViewSet
 from apps.vehicle.models import Vehicle, TrackVehicle
 from apps.vehicle.serializer import VehicleSerializer, CreateOrUpdateVehicleSerializer, \
-                                    ListVehicleLocaltionSerializer, CreateMultiVehicleLocaltionSerializer
+                                    ListVehicleLocaltionSerializer, CreateMultiVehicleLocaltionSerializer, HistoryVehicleLocaltionSerializer
                      
 from datetime import datetime
 from django.db.models import Prefetch
@@ -50,7 +50,7 @@ class VehicleLocaltionAPIView(BaseModelViewSet):
     serializer_action_classes = {
         'list': ListVehicleLocaltionSerializer,
         'create': CreateMultiVehicleLocaltionSerializer,
-        'history': ListVehicleLocaltionSerializer
+        'history': HistoryVehicleLocaltionSerializer
     }
 
     allow_action_name = ['create', 'list', 'history']
