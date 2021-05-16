@@ -97,6 +97,19 @@ class ListVehicleLocaltionSerializer(serializers.ModelSerializer):
         if instance.owner_id:
             return OwnerSerializer(instance.owner_id).data
 
+class HIstoryVehicleLocaltionSerializer(ListVehicleLocaltionSerializer):
+    def get_position(self, instance):
+        trackvehicle_list = instance.trackvehicle_set.all()
+        result = []
+        for item in trackvehicle_list:
+            result.append({
+                'lat':item.latitude,
+                'lng': item.longitude,
+                'speed': item.speed,
+                'date': item.date,
+            })
+        return result
+
 
 class CreateVehicleLocaltionSerializer(serializers.ModelSerializer):
     class Meta:
