@@ -62,5 +62,7 @@ def seed_data_localtion(minutes):
                     speed=speed,
                     vehicle_id=item
                 )    
-           )
+            )
+            direct_current = direct_next
+            localtion_current = localtion_next
     return data
