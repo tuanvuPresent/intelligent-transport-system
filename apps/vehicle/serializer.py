@@ -80,13 +80,14 @@ class ListVehicleLocaltionSerializer(serializers.ModelSerializer):
                     'speed': item.speed,
                     'date': item.date,
                 })
-        else:
+        elif len(trackvehicle_last) > 0:
             result.append({
                 'lat':trackvehicle_last[0].latitude,
                 'lng': trackvehicle_last[0].longitude,
                 'speed': trackvehicle_last[0].speed,
                 'date': trackvehicle_last[0].date,
             })
+            
         return result
     
     def get_speed(self, instance):
