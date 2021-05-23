@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from geopy.geocoders import Nominatim
 from apps.common.constant import ErrorCode
 from apps.common.custom_exception_handler import CustomAPIException
 from apps.vehicle.models import Vehicle, TrackVehicle, Owner
@@ -71,6 +71,7 @@ class ListVehicleLocaltionSerializer(serializers.ModelSerializer):
         trackvehicle_list = instance.trackvehicle_set.all()
         trackvehicle_last = instance.trackvehicle_last
         result = []
+        geolocator = Nominatim(user_agent="http")
         if len(trackvehicle_list) > 0:
             for item in trackvehicle_list:
                 result.append({

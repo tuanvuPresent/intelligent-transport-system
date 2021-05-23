@@ -28,6 +28,7 @@ schema_view = get_schema_view(openapi.Info(
     contact=openapi.Contact(email="contact@snippets.local"),
     license=openapi.License(name="BSD License"),
 ),
+    url='https://8000-crimson-flyingfish-owc41nck.ws-us07.gitpod.io/',
     public=True,
     permission_classes=(permissions.AllowAny,), )
 
