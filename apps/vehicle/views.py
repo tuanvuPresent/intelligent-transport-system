@@ -16,6 +16,7 @@ from rest_framework.decorators import action
 from drf_yasg import openapi
 from django.shortcuts import get_object_or_404
 from datetime import timedelta
+from .utils import seed_data_localtion
 
 class VehicleFilter(FilterSet):
     vehicle_type = filters.CharFilter(field_name='vehicle_type', lookup_expr='exact')
@@ -53,7 +54,7 @@ class VehicleLocaltionAPIView(BaseModelViewSet):
         'history': HistoryVehicleLocaltionSerializer
     }
 
-    allow_action_name = ['create', 'list', 'history']
+    allow_action_name = ['create', 'list', 'history', 'seed_data']
 
     date = openapi.Parameter('date', openapi.IN_QUERY, description="yyyy-mm-dd", pattern='^\d{4}-\d{1,2}-\d{1,2}$',
                              type=openapi.TYPE_STRING, default=None, required=True)
@@ -111,3 +112,11 @@ class VehicleLocaltionAPIView(BaseModelViewSet):
         queryset = get_object_or_404(queryset, pk=id)
         serializer = self.get_serializer(queryset)
         return Response(serializer.data)
+    
+    @swagger_auto_schema(manual_parameters=[minutes])
+    @action(methods=['get'], detail=False, url_path='seed-data')
+    def seed_data(self, request, *args, **kwargs):
+        minutes = int(self.request.query_params.get('minutes'))
+        data = seed_data_localtion(minutes)
+        TrackVehicle.objects.bulk_create(data)
+        return Response()

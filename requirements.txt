@@ -12,3 +12,4 @@ gunicorn==20.0.4
 whitenoise~=5.2.0
 pyicloud==0.10.2
 django-crontab
+geopy
