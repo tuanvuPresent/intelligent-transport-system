@@ -44,6 +44,7 @@ def seed_data_localtion(minutes):
     if vehicle:
         vehicle_id = vehicle.id
     vehicle_list = Vehicle.objects.all().exclude(id=vehicle_id)
+    TrackVehicle.objects.filter(date__gte=datetime.now()).delete()
     for item in vehicle_list:
         direct_current = direct_list[random.randint(0, 7)]
         localtion_current = random.randint(2100, 2200) / 100, random.randint(1050, 1060) / 10
