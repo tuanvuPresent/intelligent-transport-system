@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import random
 import math
 from .models import TrackVehicle, Vehicle
+from django.db.models import Prefetch
 
 direct_list = [
     (1, -1), (1, 0), (1, 1), (0, 1),  
@@ -43,11 +44,19 @@ def seed_data_localtion(minutes):
     vehicle_id = None
     if vehicle:
         vehicle_id = vehicle.id
-    vehicle_list = Vehicle.objects.all().exclude(id=vehicle_id)
+    vehicle_list = Vehicle.objects.all().exclude(id=vehicle_id).prefetch_related(
+            Prefetch(
+                'trackvehicle_set',
+                queryset=TrackVehicle.objects.all().order_by('-date'),
+            )
+        )
     TrackVehicle.objects.filter(date__gte=datetime.now()).delete()
     for item in vehicle_list:
         direct_current = direct_list[random.randint(0, 7)]
         localtion_current = random.randint(2100, 2200) / 100, random.randint(1050, 1060) / 10
+        trackvehicle = item.trackvehicle_set.all()
+        if len(trackvehicle) > 0:
+            localtion_current = trackvehicle[0].latitude, trackvehicle[0].longitude
         current_time = datetime.now()
         for i in range(minutes * 3):
             direct_next = get_direct_next(direct_current)
