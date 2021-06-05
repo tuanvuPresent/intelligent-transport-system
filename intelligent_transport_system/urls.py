@@ -28,7 +28,6 @@ schema_view = get_schema_view(openapi.Info(
     contact=openapi.Contact(email="contact@snippets.local"),
     license=openapi.License(name="BSD License"),
 ),
-url='https://8000-coral-smelt-4b3sif33.ws-us08.gitpod.io/',
     public=True,
     permission_classes=(permissions.AllowAny,), )
 
