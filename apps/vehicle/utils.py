@@ -4,6 +4,7 @@ import random
 import math
 from .models import TrackVehicle, Vehicle
 from django.db.models import Prefetch
+from math import radians
 
 direct_list = [
     (1, -1), (1, 0), (1, 1), (0, 1),  
@@ -25,7 +26,7 @@ def get_location_next(localtion_current, direct):
     speed = random.randint(55, 155) / 10
     distance = 20 * speed / math.sqrt(direct[0] * direct[0] + direct[1] * direct[1])
     lat = localtion_current[0] + (direct[0] * distance) / 111320
-    lng = localtion_current[1] + (direct[1] * distance) / (math.cos(localtion_current[0]) * 111320)
+    lng = localtion_current[1] + (direct[1] * distance) / (math.cos(radians(localtion_current[0]) * 111320)
     return lat, lng
 
 def get_direct_next(direct_current):
